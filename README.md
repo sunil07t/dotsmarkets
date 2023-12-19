@@ -1,5 +1,5 @@
 # dotsmarkets
-Inscriptions on Polkadot
+First Inscription dApp on Polkadot
 
 ## Running locally
 - npm i
