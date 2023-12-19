@@ -5,10 +5,23 @@ import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 // export type AccountInfo = any; // Define a more specific type if needed
 
 export async function setupPolkadotApi(): Promise<ApiPromise> {
-  const provider = new WsProvider('wss://polkadot.api.onfinality.io/public-ws');
+  const provider = new WsProvider('wss://rococo-rpc.polkadot.io');
   const api = await ApiPromise.create({ provider });
   return api;
 }
+
+export async function mintInscription(account: InjectedAccountWithMeta, inscriptionData: string) {
+    const { web3FromSource } = await import('@polkadot/extension-dapp');
+    const injector = await web3FromSource(account.meta.source);
+    const api = await ApiPromise.create({ 
+        provider: new WsProvider('wss://rococo-rpc.polkadot.io')
+      });  
+    const transaction = api.tx.system.remarkWithEvent(inscriptionData);
+  
+    const hash = await transaction.signAndSend(account.address, { signer: injector.signer });
+  
+    return hash; // Transaction hash
+  }
 
 export async function connectWallet(walletPrefix: string): Promise<InjectedAccountWithMeta[]> {
   if (typeof window === 'undefined') {

@@ -1,14 +1,18 @@
 // pages/index.tsx
 import React, { useState } from 'react';
 import WalletConnectModal from '../components/WalletConnectModal';
-import { connectWallet } from '../services/polkadot';
+import LoadingIndicator from '../components/LoadingIndicator';
+import { connectWallet, mintInscription } from '../services/polkadot';
 import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import styles from '@/styles/Home.module.css'
+import { toast } from 'react-toastify';
 
 const Home: React.FC = () => {
   const [account, setAccount] = useState<InjectedAccountWithMeta | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [isMinting, setIsMinting] = useState<boolean>(false);
+  const [transactionHash, setTransactionHash] = useState<string>('');
 
   const handleConnectWallet = () => {
     setIsModalOpen(true);
@@ -27,7 +31,6 @@ const Home: React.FC = () => {
     const walletPrefix = walletPrefixMap[walletName];
     if (!walletPrefix) {
       console.error(`Unknown wallet: ${walletName}`);
-      // ... handle unknown wallet case
       return;
     }
   
@@ -41,6 +44,33 @@ const Home: React.FC = () => {
       }
     } catch (error) {
       console.error(`Failed to connect to ${walletName}:`, error);
+    }
+  };
+
+  const handleMint = async () => {
+    if (!account) {
+      toast.error("Please connect your wallet first.");
+      return;
+    }
+    setIsMinting(true);
+
+    try {
+      const inscriptionData = '{"p":"pox-20","op":"mint","tick":"poxa","amt":"1000"}';
+      const hash = await mintInscription(account, inscriptionData);
+      toast.success("Transaction success:, " + hash);
+      setTransactionHash(hash.toString());
+      console.log('Transaction hash:', hash);
+    } catch (error: any) {
+      if (error.message.includes('User denied transaction signature')) {
+        setIsMinting(false);
+        toast.info("Transaction cancelled by user.");
+      } else {
+        setIsMinting(false);
+        console.error('Error minting inscription:', error);
+        toast.error("Error minting inscription.");
+      }
+    } finally {
+      setIsMinting(false);
     }
   };
 
@@ -59,10 +89,9 @@ const Home: React.FC = () => {
       <nav className={styles.navbar}>
         <div className={styles.logo}>LOGO</div>
         <ul className={styles.navItems}>
-          <li>HOME</li>
-          <li>GRANT</li>
-          <li>ROADMAP</li>
-          <li>DOCUMENT</li>
+          <li>Home</li>
+          <li>Roadmap</li>
+          <li>Document</li>
         </ul>
         {account && (
         <div className={styles.accountInfo}>
@@ -81,9 +110,13 @@ const Home: React.FC = () => {
           )}
       </nav>
 
+      {transactionHash && <div className={styles.successHash}>Transaction Hash: {transactionHash}</div>}
+
       <div className={styles.mainContent}>
         <div className={styles.card}>
-          <button className={styles.mintBtn}>Mint</button>
+        <button onClick={handleMint} className={styles.mintBtn} disabled={isMinting}>
+            {isMinting ? <LoadingIndicator /> : 'Mint'}
+          </button>
         </div>
       </div>
 
