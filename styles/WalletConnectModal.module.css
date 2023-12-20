@@ -41,12 +41,12 @@
 }
 
 .closeButton:hover {
-  color: #ccc; /* Slightly change color on hover */
+  color: rgba(255, 255, 255, 0.6);; /* Slightly change color on hover */
 }
   
   .modalButton {
-    background: #fff; /* Button background color */
-    color: #000; /* Button text color */
+    background: #F5F5F5; /* Button background color */
+    color: #010D17; /* Button text color */
     border: none;
     border-radius: 2rem;
     padding: 1rem 2rem;
@@ -57,6 +57,6 @@
   }
   
   .modalButton:hover {
-    background: #eee; /* Button hover background color */
+    background: rgba(255, 255, 255, 0.6);; /* Button hover background color */
     transform: scale(1.05); /* Slight increase in size on hover */
   }

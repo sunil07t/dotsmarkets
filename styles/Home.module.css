@@ -1,88 +1,316 @@
 /* styles/Home.module.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800;900&display=swap');
+
 .container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
   background: url('/homebg.png') no-repeat center center fixed;
   background-size: cover;
+  justify-content: space-between;
+  color: #F5F5F5;
+  font-family: 'Poppins', sans-serif;
+}
+
+
+.main {
+  text-align: center;
+  padding: 0 36px;
+}
+
+.mintSection {
+  text-align: center;
+}
+
+.title {
+  font-size: 70px;
+  margin-bottom: 20px;
+  margin-top: 33px;
+  font-weight: 900;
+}
+
+/* .mintProgress {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 20px;
+} */
+
+.mintInfo {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  margin-top: 32px;
+  /* additional styling */
+}
+
+.mintStatus{
+  font-size: 46px;
+  font-weight: 900;
+}
+
+.mintStats{
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.mintStatsTitle{
+  font-size: 20px;
+}
+
+.mintStatsValue{
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 9px;
+}
+
+.progressBar {
+  background: #F5F5F5;
+  border-radius: 10px;
+  margin-bottom: 44px;
+}
+
+.progress {
+  background: linear-gradient(to right, #ff6ec4, #7873f5);
+  height: 12px;
+  border-radius: 10px;
+  /* dynamic width based on progress */
+}
+
+
+
+.mintBtn {
+  background: linear-gradient(138.85deg, rgba(214, 136, 199, 0.5) 11.88%, rgba(63, 98, 145, 0.5) 110.15%);
+  color: #F5F5F5;
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 3rem;
+  cursor: progress;
+  margin-top: 50px;
+  margin-bottom: 76px;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.header {
+  display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 0 3rem; /* Adjust padding as needed */
+  background: url('/bar.svg') no-repeat top center;
+  margin-top: -1px;
+  font-size: 16px;
+}
+
+.logo {
+  width: auto; /* or a specific size like 150px */
+  height: auto; /* or a specific size like 50px */
+  margin-top: 3px;
+}
+
+
+.xlogo {
+  width: auto; /* or a specific size like 150px */
+  height: auto; /* or a specific size like 50px */
+  cursor: pointer;
+}
+
+.protocol {
+  width: auto; /* or a specific size like 150px */
+  height: auto; /* or a specific size like 50px */
+  margin-bottom: 40px;
 }
 
 .navbar {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 1rem;
+  gap: 36px;
 }
 
-/* .logo { */
-  /* Add styles for your logo here */
-/* } */
-
-.navItems {
-  list-style: none;
+.navContent {
   display: flex;
-  gap: 2rem;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 60px;
 }
 
-.navItems li {
+.navItem {
+  color: #F5F5F5;
+  text-decoration: none;
+  padding: 0 0 3px;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s;
+}
+
+.navItem:hover {
+  color: rgba(255, 255, 255, 0.6); /* Slight background on hover */
+}
+
+.navInactive {
+  color: #F5F5F5;
+  opacity: 40%; 
+  text-decoration: none;
+  padding: 0 0 3px;
+  border-radius: 0.5rem;
+  transition: background-color 0.3s;
   cursor: pointer;
-  color: white; /* or any color you want */
 }
 
 .connectWalletBtn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 2rem;
+  --edge-size: 1.5em;
+  background: transparent;
+  position: relative;
+  border:2px solid #F5F5F5;
+  color: #F5F5F5;
+  border-radius: 16px;
+  margin-bottom:10px;
+  width:250px;
   cursor: pointer;
-  /* Add more styles for your button */
+  padding: 0.5em 0.5em;
+  isolation: isolate;
+  display: inline-grid;
+  place-content: center;
+  clip-path: polygon(
+    calc(100% - var(--edge-size)) 0,
+    100% var(--edge-size),
+    100% 100%,
+    var(--edge-size) 100%,
+    0% calc(100% - var(--edge-size)),
+    0 0);
+  transition: color 250ms;
+  font-size: 16px;
+  font-weight: 600;
 }
 
-.mainContent {
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.connectWalletBtn:hover {
+  border:2px solid rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.6); 
 }
 
-.card {
-  width: 300px;
-  height: 400px;
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(5px);
+.footer {
+  padding: 1rem;
+  color: #F5F5F5;
+  text-align: center;
+}
+
+.footerContent {
+  font-size: 0.875rem;
+  margin-top: 20px;
+}
+
+.mintProgress {
+  --edge-size: 3em;
+  background: rgba(238,238,238, 0.3);
+  max-width: 1209px;
   border-radius: 20px;
+  margin: auto;
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
-  /* Add more styles as needed */
+  place-content: center;
+  padding: 0 42px;
+  clip-path: polygon(calc(100% - var(--edge-size)) 0, 100% var(--edge-size), 100% 100%, var(--edge-size) 100%, 0% calc(100% - var(--edge-size)), 0 0);
 }
 
-.mintBtn {
-  padding: 1rem 2rem;
-  border: none;
-  border-radius: 2rem;
+.progressBarInfo{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.leftNav{
+  display: flex;
+  flex-direction: row;
+  gap: 22px;
+}
+
+.hamburger {
+  display: none;
+  margin-top: 28px;
   cursor: pointer;
-  /* Add more styles for your mint button */
 }
 
-.accountInfo {
-  position: absolute;
-  bottom: 20px;
-  right: 20px;
-  color: white; /* or any color you want */
+.protocolMobile{
+  display: none;
+  font-size: 16px;
+  text-align: left;
+  margin: 16px auto 27px auto;
 }
 
-.successHash {
-  color: rgb(var(--foreground-rgb));/* Success color */
-  background: rgba(255, 255, 255, 0.2); /* Same background as the card */
-  backdrop-filter: blur(5px);
-  border-radius: 20px; /* Same border radius as the card */
-  padding: 1rem; /* Spacing inside the message box */
-  margin-bottom: 1rem; /* Space above the card */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: similar shadow as the card */
-  width: 50%; /* Adjust width as needed */
-  text-align: center; /* Center the text inside the box */
+.logoMobile {
+  width: auto; /* or a specific size like 150px */
+  height: auto; /* or a specific size like 50px */
+  margin-top: 3px;
+  display: none;
+}
+
+/* Responsive styles */
+@media (max-width: 1168px) {
+  .navContent{
+    display: none; 
+  }
+
+  .hamburger {
+    display: block;
+  }
+
+  .navContentHbg {
+    display: flex; 
+    flex-direction: column;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #000; 
+  }
+
+  .navItem {
+    padding: 1rem; 
+    border-bottom: 1px solid #ccc; 
+  }
+}
+
+@media (max-width: 768px) {
+  .protocolMobile{
+    display: block;
+  }
+
+  .protocol {
+    display: none; 
+  }
+
+  .title {
+    font-size: 40px;
+    margin-top: 25px;
+    text-align: left;
+  }
+
+  .connectWalletBtn {
+    width:158px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .logoMobile {
+      display: block;
+  }
+
+  .logo{
+    display: none;
+  }
+
+  .header {
+    padding: 0 36px;
+    background: url('/bar2.svg') no-repeat top center;
+    margin-top: -1px;
+  }
+
+  /* display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 3rem; 
+  background: url('/bar.svg') no-repeat top center;
+  margin-top: -1px;
+  font-size: 16px; */
+
 }

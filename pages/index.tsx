@@ -6,6 +6,7 @@ import { connectWallet, mintInscription } from '../services/polkadot';
 import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import styles from '@/styles/Home.module.css'
 import { toast } from 'react-toastify';
+import Image from 'next/image';
 
 const Home: React.FC = () => {
   const [account, setAccount] = useState<InjectedAccountWithMeta | null>(null);
@@ -13,6 +14,10 @@ const Home: React.FC = () => {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [isMinting, setIsMinting] = useState<boolean>(false);
   const [transactionHash, setTransactionHash] = useState<string>('');
+
+  const [isNavCollapsed, setIsNavCollapsed] = useState(true);
+
+  const handleNavCollapse = () => setIsNavCollapsed(!isNavCollapsed);
 
   const handleConnectWallet = () => {
     setIsModalOpen(true);
@@ -46,6 +51,14 @@ const Home: React.FC = () => {
       console.error(`Failed to connect to ${walletName}:`, error);
     }
   };
+
+  const formatAccountAddress = (address: string): string => {
+    if (address.length > 0) {
+      return `${address.slice(0, 5)}...${address.slice(-3)}`;
+    } else {
+      return address;
+    }
+  }
 
   const handleMint = async () => {
     if (!account) {
@@ -81,47 +94,137 @@ const Home: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      <WalletConnectModal
+        <WalletConnectModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onWalletSelect={handleWalletSelect}
       />
-      <nav className={styles.navbar}>
-        <div className={styles.logo}>LOGO</div>
-        <ul className={styles.navItems}>
-          <li>Home</li>
-          <li>Roadmap</li>
-          <li>Document</li>
-        </ul>
-        {account && (
-        <div className={styles.accountInfo}>
-          <h2>Connected Account:</h2>
-          <p>{account.address}</p>
+      <header className={styles.header}>
+        <div className={styles.leftNav}>
+          <div className={styles.hamburger} onClick={handleNavCollapse}>
+            <Image src="/hamburger.svg" alt="Menu" width={25} height={25} />
+          </div>
+          <div className={styles.logo}>
+            <Image src="logo.svg" alt="DOTS Logo" width={135} height={77} />
+          </div>
+          <div className={styles.logoMobile}>
+            <Image src="logo.svg" alt="DOTS Logo" width={92} height={52} />
+          </div>
         </div>
-      )}
+        {/* <nav className={`${styles.navContent} ${isNavCollapsed ? styles.collapsed : ''}`}> */}
+        <nav className={styles.navContent}>
+          <nav className={styles.navbar}>
+            <a href="" className={styles.navItem}>HOME</a>
+            <a href="https://dots-markets.gitbook.io/dots-markets-litepaper/" target="_" className={styles.navItem}>LITEPAPER</a>
+            <div className={styles.navInactive}>MARKETPLACE (COMING)</div>
+          </nav>
+          <nav className={styles.navbar}>
+            <div className={styles.navInactive}>MY ASSETS (COMING)</div>
+            <a href="#marketplace" className={styles.navItem}>
+            <Image src="lang.svg" alt="Language Logo" width={22} height={22} />
+            </a>
+          {account && (<div className={styles.navItem}>{formatAccountAddress(account.address)}</div>)}
+          </nav>
+        </nav>
         {!isConnected ? (
-        <button onClick={handleConnectWallet} className={styles.connectWalletBtn}>
-          Connect Wallet
-        </button>
+          <button onClick={handleConnectWallet} className={`${styles.connectWalletBtn} ${styles.connectWalletBtnCut}`}>
+            CONNECT WALLET
+          </button>
           ) : (
-            <button onClick={handleDisconnectWallet} className={styles.connectWalletBtn}>
-              Disconnect
+            <button onClick={handleDisconnectWallet} className={`${styles.connectWalletBtn} ${styles.connectWalletBtnCut}`}>
+              DISCONNECT
             </button>
           )}
-      </nav>
+      </header>
 
-      {transactionHash && <div className={styles.successHash}>Transaction Hash: {transactionHash}</div>}
-
-      <div className={styles.mainContent}>
-        <div className={styles.card}>
-        <button onClick={handleMint} className={styles.mintBtn} disabled={isMinting}>
-            {isMinting ? <LoadingIndicator /> : 'Mint'}
-          </button>
+      <main className={styles.main}>
+        <div className={styles.mintSection}>
+          <h1 className={styles.title}>The First Polkadot Inscription</h1>
+          <div className={styles.protocol}>
+            <Image src="protocol.svg" alt="PRC-20" width={206} height={44} />
+          </div>
+          <div className={styles.protocolMobile}>
+            Powered By PRC-20
+          </div>
+          <div className={styles.mintProgress}>
+            <div className={styles.mintInfo}>
+              <div className={styles.mintStatus}>Mint Progress</div>
+              <div className={styles.mintStats}>
+                <div className={styles.mintStatsTitle}>Total Supply:</div>
+                <div className={styles.mintStatsValue}>42,000,000,000.00</div>
+              </div>
+              <div className={styles.mintStats}>
+                <div className={styles.mintStatsTitle}> Mint Time:</div>
+                <div className={styles.mintStatsValue}>TBA DEC. 2023 UTC+0</div>
+              </div>
+            </div>
+            <div className={styles.progressBarInfo}>
+              <div className={styles.progressStats}>Minted</div>
+              <div className={styles.progressStats}>Soon</div>
+            </div>
+            <div className={styles.progressBar}>
+              <div className={styles.progress} style={{ width: '0%' }}></div>
+            </div>
+          </div>
+          <button className={styles.mintBtn}>Mint Soon</button>
         </div>
-      </div>
+      </main>
+
+      <footer className={styles.footer}>
+        <a href="https://twitter.com/dotsmarkets" target="_" className={styles.xlogo}>
+          <Image src="x.svg" alt="X Logo" width={30} height={30} />
+        </a>
+        <div className={styles.footerContent}>
+          © 2023 DOTS MARKETS. All rights reserved.
+        </div>
+      </footer>
 
     </div>
   );
+
+  // return (
+  //   <div className={styles.container}>
+  //     <WalletConnectModal
+  //       isOpen={isModalOpen}
+  //       onClose={() => setIsModalOpen(false)}
+  //       onWalletSelect={handleWalletSelect}
+  //     />
+  //     <nav className={styles.navbar}>
+  //       <div className={styles.logo}>LOGO</div>
+  //       <ul className={styles.navItems}>
+  //         <li>Home</li>
+  //         <li>Roadmap</li>
+  //         <li>Document</li>
+  //       </ul>
+  //       {account && (
+  //       <div className={styles.accountInfo}>
+  //         <h2>Connected Account:</h2>
+  //         <p>{account.address}</p>
+  //       </div>
+  //     )}
+  //       {!isConnected ? (
+  //       <button onClick={handleConnectWallet} className={styles.connectWalletBtn}>
+  //         Connect Wallet
+  //       </button>
+  //         ) : (
+  //           <button onClick={handleDisconnectWallet} className={styles.connectWalletBtn}>
+  //             Disconnect
+  //           </button>
+  //         )}
+  //     </nav>
+
+  //     {transactionHash && <div className={styles.successHash}>Transaction Hash: {transactionHash}</div>}
+
+  //     <div className={styles.mainContent}>
+  //       <div className={styles.card}>
+  //       <button onClick={handleMint} className={styles.mintBtn} disabled={isMinting}>
+  //           {isMinting ? <LoadingIndicator /> : 'Mint'}
+  //         </button>
+  //       </div>
+  //     </div>
+
+  //   </div>
+  // );
 };
 
 export default Home;

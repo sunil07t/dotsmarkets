@@ -25,7 +25,7 @@ export async function mintInscription(account: InjectedAccountWithMeta, inscript
     const hash = await batchTransaction.signAndSend(account.address, { signer: injector.signer });
     return hash; 
 
-  }
+}
 
 export async function connectWallet(walletPrefix: string): Promise<InjectedAccountWithMeta[]> {
   if (typeof window === 'undefined') {
