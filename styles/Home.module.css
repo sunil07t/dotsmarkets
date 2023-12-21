@@ -240,10 +240,11 @@
   margin-top: 3px;
   display: none;
   transition: transform 0.5s ease-out;
+  position: relative; /* Add this line if it's not already positioned */
 }
 
 .main, .hLine {
-  transition: transform 0.5s ease-in-out; /* Ensure the transition is consistent */
+  transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
   transform: translateY(0); /* Start in the usual position */
 }
 
@@ -267,7 +268,7 @@
   align-items: center;
   flex-direction: column;
   transform: translateX(-100%);
-  transition: transform 0.5s ease 0.5s; /* Delay slide in */
+  transition: transform 0.5s ease, opacity 0.5s ease;
 }
 
 /* Responsive styles */
@@ -281,8 +282,8 @@
   }
 
   .logoMobile.menuOpen {
-    transform: translateX(90%);
-  }
+    /* Center the element - assuming the logo is 92px wide as per your code */
+    transform: translateX(calc(50vw - 131px)); /* Adjust the 46px if the logo width changes */  }
 
   .connectWalletBtn.menuOpen {
     transform: translateX(100vw);
@@ -300,6 +301,13 @@
 
   .hLine.menuOpen, .main.menuOpen {
     transform: translateY(100vh); 
+    transition-delay: 0s;
+  }
+
+  .navOverlay:not(.menuOpen) {
+    /* Slide out before .hLine and .main slide back in */
+    transform: translateX(-100%);
+    transition-delay: 0s; /* No delay when sliding out */
   }
 
   .navItemsCentered {
@@ -308,6 +316,7 @@
 
   .navOverlay.menuOpen {
     transform: translateX(0);
+    transition-delay: 0.3s; /* Adjust as needed */
   }
 
   .navItem, .navInactive {

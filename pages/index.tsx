@@ -114,7 +114,7 @@ const Home: React.FC = () => {
             <Image src="logo.svg" alt="DOTS Logo" width={135} height={77} />
           </div>
           <div className={classNames(styles.logoMobile, { [styles.menuOpen]: !isNavCollapsed })}>
-            <Image src="logo.svg" alt="DOTS Logo" width={92} height={52} />
+            <Image src="/logoMobile.png" alt="DOTS Logo" width={92} height={52} />
           </div>
         </div>
         <nav className={styles.navContent}>
