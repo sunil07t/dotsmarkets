@@ -12,10 +12,10 @@
   font-family: 'Poppins', sans-serif;
 }
 
-
 .main {
   text-align: center;
   padding: 0 36px;
+  transform: translateY(0);
 }
 
 .mintSection {
@@ -29,36 +29,29 @@
   font-weight: 900;
 }
 
-/* .mintProgress {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 2rem;
-  border-radius: 20px;
-} */
-
 .mintInfo {
   display: flex;
   justify-content: space-between;
   margin-bottom: 32px;
   margin-top: 32px;
-  /* additional styling */
 }
 
-.mintStatus{
+.mintStatus {
   font-size: 46px;
   font-weight: 900;
 }
 
-.mintStats{
+.mintStats {
   display: flex;
   flex-direction: column;
   text-align: left;
 }
 
-.mintStatsTitle{
+.mintStatsTitle {
   font-size: 20px;
 }
 
-.mintStatsValue{
+.mintStatsValue {
   font-size: 20px;
   font-weight: 600;
   margin-top: 9px;
@@ -74,10 +67,7 @@
   background: linear-gradient(to right, #ff6ec4, #7873f5);
   height: 12px;
   border-radius: 10px;
-  /* dynamic width based on progress */
 }
-
-
 
 .mintBtn {
   background: linear-gradient(138.85deg, rgba(214, 136, 199, 0.5) 11.88%, rgba(63, 98, 145, 0.5) 110.15%);
@@ -93,31 +83,33 @@
 }
 
 .header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 3rem; /* Adjust padding as needed */
+  padding: 0 3rem;
   background: url('/bar.svg') no-repeat top center;
   margin-top: -1px;
   font-size: 16px;
 }
 
+.headerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .logo {
-  width: auto; /* or a specific size like 150px */
-  height: auto; /* or a specific size like 50px */
+  width: auto;
+  height: auto;
   margin-top: 3px;
 }
 
-
 .xlogo {
-  width: auto; /* or a specific size like 150px */
-  height: auto; /* or a specific size like 50px */
+  width: auto;
+  height: auto;
   cursor: pointer;
 }
 
 .protocol {
-  width: auto; /* or a specific size like 150px */
-  height: auto; /* or a specific size like 50px */
+  width: auto;
+  height: auto;
   margin-bottom: 40px;
 }
 
@@ -143,12 +135,12 @@
 }
 
 .navItem:hover {
-  color: rgba(255, 255, 255, 0.6); /* Slight background on hover */
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .navInactive {
   color: #F5F5F5;
-  opacity: 40%; 
+  opacity: 40%;
   text-decoration: none;
   padding: 0 0 3px;
   border-radius: 0.5rem;
@@ -157,6 +149,7 @@
 }
 
 .connectWalletBtn {
+  transition: transform 0.5s ease-out;
   --edge-size: 1.5em;
   background: transparent;
   position: relative;
@@ -177,14 +170,13 @@
     var(--edge-size) 100%,
     0% calc(100% - var(--edge-size)),
     0 0);
-  transition: color 250ms;
   font-size: 16px;
   font-weight: 600;
 }
 
 .connectWalletBtn:hover {
   border:2px solid rgba(255, 255, 255, 0.6);
-  color: rgba(255, 255, 255, 0.6); 
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .footer {
@@ -211,14 +203,14 @@
   clip-path: polygon(calc(100% - var(--edge-size)) 0, 100% var(--edge-size), 100% 100%, var(--edge-size) 100%, 0% calc(100% - var(--edge-size)), 0 0);
 }
 
-.progressBarInfo{
+.progressBarInfo {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   margin-bottom: 6px;
 }
 
-.leftNav{
+.leftNav {
   display: flex;
   flex-direction: row;
   gap: 22px;
@@ -228,9 +220,14 @@
   display: none;
   margin-top: 28px;
   cursor: pointer;
+  transition: transform 0.5s ease;
 }
 
-.protocolMobile{
+.hamburger.active {
+  transform: rotate(45deg);
+}
+
+.protocolMobile {
   display: none;
   font-size: 16px;
   text-align: left;
@@ -238,10 +235,39 @@
 }
 
 .logoMobile {
-  width: auto; /* or a specific size like 150px */
-  height: auto; /* or a specific size like 50px */
+  width: auto;
+  height: auto;
   margin-top: 3px;
   display: none;
+  transition: transform 0.5s ease-out;
+}
+
+.main, .hLine {
+  transition: transform 0.5s ease-in-out; /* Ensure the transition is consistent */
+  transform: translateY(0); /* Start in the usual position */
+}
+
+.hLine {
+  display: none; /* Change to block to make it visible */
+  border: none;
+  color: white;
+  text-align: center;
+  height: 1px;
+  background: -webkit-gradient(radial, 50% 50%, 0, 50% 50%, 350, from(#fff), to(#000));
+}
+
+.navOverlay {
+  position: fixed;
+  top:74px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  transform: translateX(-100%);
+  transition: transform 0.5s ease 0.5s; /* Delay slide in */
 }
 
 /* Responsive styles */
@@ -254,6 +280,14 @@
     display: block;
   }
 
+  .logoMobile.menuOpen {
+    transform: translateX(90%);
+  }
+
+  .connectWalletBtn.menuOpen {
+    transform: translateX(100vw);
+  }
+
   .navContentHbg {
     display: flex; 
     flex-direction: column;
@@ -264,13 +298,63 @@
     background: #000; 
   }
 
-  .navItem {
-    padding: 1rem; 
-    border-bottom: 1px solid #ccc; 
+  .hLine.menuOpen, .main.menuOpen {
+    transform: translateY(100vh); 
+  }
+
+  .navItemsCentered {
+    text-align: center;
+  }
+
+  .navOverlay.menuOpen {
+    transform: translateX(0);
+  }
+
+  .navItem, .navInactive {
+    display: block;
+    padding: 25px;
+    font-size: 16px;
+    color: #F5F5F5;
+    text-decoration: none;
+    transition: transform 0.3s, opacity 0.3s;
+  }
+
+  .navOverlay.menuOpen .navItem:nth-child(1),
+  .navOverlay.menuOpen .navInactive:nth-child(1) {
+    transition-delay: 0.6s;
+  }
+
+  .navOverlay.menuOpen .navItem:nth-child(2),
+  .navOverlay.menuOpen .navInactive:nth-child(2) {
+    transition-delay: 0.7s;
+  }
+
+  .navOverlay.menuOpen .navItem:nth-child(3),
+  .navOverlay.menuOpen .navInactive:nth-child(3) {
+    transition-delay: 0.8s;
+  }
+
+  .navOverlay.menuOpen .navItem:nth-child(4),
+  .navOverlay.menuOpen .navInactive:nth-child(4) {
+    transition-delay: 0.9s;
+  }
+
+  .navItem:hover, .navInactive:hover {
+    transform: scale(1.05);
+    opacity: 0.7;
   }
 }
 
 @media (max-width: 768px) {
+  .mintBtn {
+    margin-bottom: 52px;
+  }
+
+  .mintInfo {
+    flex-direction: column;
+    gap: 20px
+  }
+
   .protocolMobile{
     display: block;
   }
@@ -299,18 +383,38 @@
     display: none;
   }
 
-  .header {
-    padding: 0 36px;
-    background: url('/bar2.svg') no-repeat top center;
-    margin-top: -1px;
+  .hLine{
+    display: block;
   }
 
-  /* display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 3rem; 
-  background: url('/bar.svg') no-repeat top center;
-  margin-top: -1px;
-  font-size: 16px; */
+  .header {
+    padding: 0 36px;
+    background: none;
+  }
 
+  .connectWalletBtn{
+    margin-top: 10px;
+  }
+
+  .logoMobile{
+    margin-top: 15px;
+  }
+
+  .logoMobile{
+    margin-top: 15px;
+  }
+
+  .mintStatus{
+    font-size: 26px;
+  }
+  
+  .mintStatsTitle{
+    font-size: 16px;
+  }
+  
+  .mintStatsValue{
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 6px;
+  }
 }

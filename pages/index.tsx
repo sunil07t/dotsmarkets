@@ -7,6 +7,7 @@ import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import styles from '@/styles/Home.module.css'
 import { toast } from 'react-toastify';
 import Image from 'next/image';
+import classNames from 'classnames';
 
 const Home: React.FC = () => {
   const [account, setAccount] = useState<InjectedAccountWithMeta | null>(null);
@@ -100,18 +101,22 @@ const Home: React.FC = () => {
         onWalletSelect={handleWalletSelect}
       />
       <header className={styles.header}>
+      <div className={classNames(styles.headerContainer, { [styles.menuOpen]: !isNavCollapsed })}>
         <div className={styles.leftNav}>
           <div className={styles.hamburger} onClick={handleNavCollapse}>
-            <Image src="/hamburger.svg" alt="Menu" width={25} height={25} />
+          {isNavCollapsed ? (
+                <Image src="/hamburger.svg" alt="Menu" width={25} height={25} />
+              ) : (
+                <Image src="/close.svg" alt="Close" width={25} height={25} />
+              )}
           </div>
-          <div className={styles.logo}>
+          <div className={`${styles.logo}`}>
             <Image src="logo.svg" alt="DOTS Logo" width={135} height={77} />
           </div>
-          <div className={styles.logoMobile}>
+          <div className={classNames(styles.logoMobile, { [styles.menuOpen]: !isNavCollapsed })}>
             <Image src="logo.svg" alt="DOTS Logo" width={92} height={52} />
           </div>
         </div>
-        {/* <nav className={`${styles.navContent} ${isNavCollapsed ? styles.collapsed : ''}`}> */}
         <nav className={styles.navContent}>
           <nav className={styles.navbar}>
             <a href="" className={styles.navItem}>HOME</a>
@@ -127,17 +132,26 @@ const Home: React.FC = () => {
           </nav>
         </nav>
         {!isConnected ? (
-          <button onClick={handleConnectWallet} className={`${styles.connectWalletBtn} ${styles.connectWalletBtnCut}`}>
+          <button onClick={handleConnectWallet} className={classNames(styles.connectWalletBtn, { [styles.menuOpen]: !isNavCollapsed })}>
             CONNECT WALLET
           </button>
           ) : (
-            <button onClick={handleDisconnectWallet} className={`${styles.connectWalletBtn} ${styles.connectWalletBtnCut}`}>
+            <button onClick={handleDisconnectWallet} className={classNames(styles.connectWalletBtn, { [styles.menuOpen]: !isNavCollapsed })}>
               DISCONNECT
             </button>
           )}
+        </div>
       </header>
-
-      <main className={styles.main}>
+      <div className={classNames(styles.navOverlay, { [styles.menuOpen]: !isNavCollapsed })}>
+        <nav className={styles.navItemsCentered}>
+          <a href="" className={styles.navItem}>HOME</a>
+          <a href="https://dots-markets.gitbook.io/dots-markets-litepaper/" target="_" className={styles.navItem}>LITEPAPER</a>
+          <div className={styles.navInactive}>MARKETPLACE (COMING)</div>
+          <div className={styles.navInactive}>MY ASSETS (COMING)</div>
+        </nav>
+      </div>
+      <div className={classNames(styles.hLine, { [styles.menuOpen]: !isNavCollapsed })}></div>
+      <main className={classNames(styles.main, { [styles.menuOpen]: !isNavCollapsed })}>
         <div className={styles.mintSection}>
           <h1 className={styles.title}>The First Polkadot Inscription</h1>
           <div className={styles.protocol}>
