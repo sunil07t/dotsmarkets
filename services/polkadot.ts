@@ -5,7 +5,7 @@ import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 // export type AccountInfo = any; // Define a more specific type if needed
 
 export async function setupPolkadotApi(): Promise<ApiPromise> {
-  const provider = new WsProvider('wss://rococo-rpc.polkadot.io');
+  const provider = new WsProvider('wss://rpc.polkadot.io');
   const api = await ApiPromise.create({ provider });
   return api;
 }
@@ -14,17 +14,28 @@ export async function mintInscription(account: InjectedAccountWithMeta, inscript
     const { web3FromSource } = await import('@polkadot/extension-dapp');
     const injector = await web3FromSource(account.meta.source);
     const api = await ApiPromise.create({ 
-        provider: new WsProvider('wss://rococo-rpc.polkadot.io')
+        provider: new WsProvider('wss://rpc.polkadot.io')
       });  
 
-    const transfer = api.tx.balances.transferAllowDeath('5E9QmJhJiTs6vUBrUKSYNCLNht1madxzCLhvwF6kNoAuaQxk', 1000000000000);
+    // Create the transactions
     const transaction = api.tx.system.remarkWithEvent(inscriptionData);
-
-    const batchTransaction = api.tx.utility.batch([transfer, transaction]);
-
-    const hash = await batchTransaction.signAndSend(account.address, { signer: injector.signer });
-    return hash; 
-
+    // Placeholder for the transfer amount - to be calculated
+    let transferAmount = 0;
+    // Calculate the total fee for the batch transaction
+    const batch = api.tx.utility.batch([api.tx.balances.transferAllowDeath(process.env.DEV_WALLET, transferAmount), transaction]);
+    const feeInfo = await batch.paymentInfo(account.address);
+    const totalFee = feeInfo.partialFee.toNumber();
+    // Set the transfer amount to the total fee
+    transferAmount = totalFee;
+    // console.log(transferAmount)
+    // Recreate the batch transaction with the updated transfer amount
+    const finalBatch = api.tx.utility.batch([
+        api.tx.balances.transferAllowDeath(process.env.DEV_WALLET, transferAmount),
+        transaction
+    ]);
+    // Send the batch transaction
+    const hash = await finalBatch.signAndSend(account.address, { signer: injector.signer });
+    return hash;
 }
 
 export async function connectWallet(walletPrefix: string): Promise<InjectedAccountWithMeta[]> {

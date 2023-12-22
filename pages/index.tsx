@@ -153,7 +153,7 @@ const Home: React.FC = () => {
       <div className={classNames(styles.hLine, { [styles.menuOpen]: !isNavCollapsed })}></div>
       <main className={classNames(styles.main, { [styles.menuOpen]: !isNavCollapsed })}>
         <div className={styles.mintSection}>
-          <h1 className={styles.title}>The First Polkadot Inscription</h1>
+          <h1 className={styles.title}>The First Polkadot Rune</h1>
           <div className={styles.protocol}>
             <Image src="protocol.svg" alt="PRC-20" width={206} height={44} />
           </div>
@@ -180,11 +180,14 @@ const Home: React.FC = () => {
               <div className={styles.progress} style={{ width: '0%' }}></div>
             </div>
           </div>
-          <button className={styles.mintBtn}>Mint Soon</button>
+          {/* <button className={styles.mintBtn}>Mint Soon</button> */}
+         <button onClick={handleMint} className={styles.mintBtn} disabled={isMinting}>
+           {isMinting ? <LoadingIndicator /> : 'Mint'}
+         </button>
         </div>
       </main>
 
-      <footer className={styles.footer}>
+      <footer className={classNames(styles.footer, { [styles.menuOpen]: !isNavCollapsed })}>
         <a href="https://twitter.com/dotsmarkets" target="_" className={styles.xlogo}>
           <Image src="x.svg" alt="X Logo" width={30} height={30} />
         </a>

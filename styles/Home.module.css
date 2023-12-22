@@ -75,7 +75,7 @@
   border: none;
   border-radius: 8px;
   padding: 1rem 3rem;
-  cursor: progress;
+  cursor: pointer;
   margin-top: 50px;
   margin-bottom: 76px;
   font-size: 20px;
@@ -183,6 +183,7 @@
   padding: 1rem;
   color: #F5F5F5;
   text-align: center;
+  transform: translateY(0);
 }
 
 .footerContent {
@@ -243,7 +244,7 @@
   position: relative; /* Add this line if it's not already positioned */
 }
 
-.main, .hLine {
+.main, .hLine, .footer{
   transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
   transform: translateY(0); /* Start in the usual position */
 }
@@ -299,7 +300,7 @@
     background: #000; 
   }
 
-  .hLine.menuOpen, .main.menuOpen {
+  .hLine.menuOpen, .main.menuOpen, .footer.menuOpen{
     transform: translateY(100vh); 
     transition-delay: 0s;
   }
