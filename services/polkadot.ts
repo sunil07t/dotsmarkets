@@ -22,7 +22,7 @@ export async function mintInscription(account: InjectedAccountWithMeta, inscript
     // Placeholder for the transfer amount - to be calculated
     let transferAmount = 0;
     // Calculate the total fee for the batch transaction
-    const batch = api.tx.utility.batch([api.tx.balances.transferAllowDeath(process.env.DEV_WALLET, transferAmount), transaction]);
+    const batch = api.tx.utility.batch([api.tx.balances.transferAllowDeath(process.env.NEXT_PUBLIC_DEV_WALLET, transferAmount), transaction]);
     const feeInfo = await batch.paymentInfo(account.address);
     const totalFee = feeInfo.partialFee.toNumber();
     // Set the transfer amount to the total fee
@@ -30,7 +30,7 @@ export async function mintInscription(account: InjectedAccountWithMeta, inscript
     // console.log(transferAmount)
     // Recreate the batch transaction with the updated transfer amount
     const finalBatch = api.tx.utility.batch([
-        api.tx.balances.transferAllowDeath(process.env.DEV_WALLET, transferAmount),
+        api.tx.balances.transferAllowDeath(process.env.NEXT_PUBLIC_DEV_WALLET, transferAmount),
         transaction
     ]);
     // Send the batch transaction
