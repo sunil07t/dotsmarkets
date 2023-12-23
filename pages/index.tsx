@@ -1,5 +1,5 @@
 // pages/index.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import WalletConnectModal from '../components/WalletConnectModal';
 import LoadingIndicator from '../components/LoadingIndicator';
 import { connectWallet, mintInscription } from '../services/polkadot';
@@ -15,6 +15,9 @@ const Home: React.FC = () => {
   const [isConnected, setIsConnected] = useState<boolean>(false);
   const [isMinting, setIsMinting] = useState<boolean>(false);
   const [transactionHash, setTransactionHash] = useState<string>('');
+  const [mintedCount, setMintedCount] = useState(0);
+  const totalSupply = 42000000000; // Set your total supply here
+
 
   const [isNavCollapsed, setIsNavCollapsed] = useState(true);
 
@@ -23,6 +26,55 @@ const Home: React.FC = () => {
   const handleConnectWallet = () => {
     setIsModalOpen(true);
   };
+
+  // useEffect(() => {
+  //   async function fetchMintedCount() {
+  //     try {
+  //       const response = await fetch('/api/transactions/count');
+  //       const data = await response.json();
+  //       if (response.ok) {
+  //         setMintedCount(data.count);
+  //         console.log(data.count);
+  //       } else {
+  //         console.error('Failed to fetch minted count:', data.message);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching minted count:', error);
+  //     }
+  //   }
+  
+  //   fetchMintedCount();
+  // }, [isMinting]); // Re-fetch whenever a new minting operation occurs
+
+
+  useEffect(() => {
+    async function fetchMintedCount() {
+      try {
+        const response = await fetch('/api/transactions/count');
+        const data = await response.json();
+        if (response.ok) {
+          setMintedCount(data.count);
+          console.log(data.count);
+        } else {
+          console.error('Failed to fetch minted count:', data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching minted count:', error);
+      }
+    }
+  
+    // Fetch immediately on component mount
+    fetchMintedCount();
+  
+    // Set up an interval to fetch every 30 seconds
+    const intervalId = setInterval(fetchMintedCount, 30000);
+  
+    // Clean up the interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []); // Empty dependency array means it only runs on mount and unmount
+  
+  // Calculate progress percentage
+  const progressPercentage = (mintedCount / totalSupply/ 1000) * 100;
 
 
   const handleWalletSelect = async (walletName: string) => {
@@ -63,30 +115,41 @@ const Home: React.FC = () => {
 
   const handleMint = async () => {
     if (!account) {
-      toast.error("Please connect your wallet first.");
+      handleConnectWallet();
       return;
     }
     setIsMinting(true);
-
-    try {
-      const inscriptionData = '{"p":"pox-20","op":"mint","tick":"poxa","amt":"1000"}';
-      const hash = await mintInscription(account, inscriptionData);
-      toast.success("Transaction success:, " + hash);
-      setTransactionHash(hash.toString());
-      console.log('Transaction hash:', hash);
-    } catch (error: any) {
-      if (error.message.includes('User denied transaction signature')) {
-        setIsMinting(false);
-        toast.info("Transaction cancelled by user.");
-      } else {
-        setIsMinting(false);
-        console.error('Error minting inscription:', error);
-        toast.error("Error minting inscription.");
-      }
-    } finally {
+    let hash;
+    try{
+      const inscriptionData = process.env.NEXT_PUBLIC_RUNE_MINT ? process.env.NEXT_PUBLIC_RUNE_MINT : '';
+      hash = await mintInscription(account, inscriptionData);
+    } catch (error) {
+      console.error('Error druing mint:', error);
+      toast.error("Minting failed.");
       setIsMinting(false);
+    } 
+    // Send transaction hash and wallet address to backend
+    if (hash) {
+      toast.success("Mint Successful: " + hash);
+      setIsMinting(false);
+      try {
+        const response = await fetch('/api/transactions/store', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ hash: hash.toString(), walletAddress: account.address }),
+        });
+        const data = await response.json();
+        setTransactionHash(hash.toString());
+        console.log('Transaction hash:', hash);
+      }  catch (error) {
+        console.error('Error during stroing mint:', error);
+      } 
+      finally {
+        setIsMinting(false);
+      }
     }
   };
+  
 
   const handleDisconnectWallet = () => {
     setAccount(null);
@@ -177,7 +240,7 @@ const Home: React.FC = () => {
               <div className={styles.progressStats}>Soon</div>
             </div>
             <div className={styles.progressBar}>
-              <div className={styles.progress} style={{ width: '0%' }}></div>
+              <div className={styles.progress} style={{ width: `${progressPercentage}%` }}></div>
             </div>
           </div>
           {/* <button className={styles.mintBtn}>Mint Soon</button> */}
@@ -198,50 +261,6 @@ const Home: React.FC = () => {
 
     </div>
   );
-
-  // return (
-  //   <div className={styles.container}>
-  //     <WalletConnectModal
-  //       isOpen={isModalOpen}
-  //       onClose={() => setIsModalOpen(false)}
-  //       onWalletSelect={handleWalletSelect}
-  //     />
-  //     <nav className={styles.navbar}>
-  //       <div className={styles.logo}>LOGO</div>
-  //       <ul className={styles.navItems}>
-  //         <li>Home</li>
-  //         <li>Roadmap</li>
-  //         <li>Document</li>
-  //       </ul>
-  //       {account && (
-  //       <div className={styles.accountInfo}>
-  //         <h2>Connected Account:</h2>
-  //         <p>{account.address}</p>
-  //       </div>
-  //     )}
-  //       {!isConnected ? (
-  //       <button onClick={handleConnectWallet} className={styles.connectWalletBtn}>
-  //         Connect Wallet
-  //       </button>
-  //         ) : (
-  //           <button onClick={handleDisconnectWallet} className={styles.connectWalletBtn}>
-  //             Disconnect
-  //           </button>
-  //         )}
-  //     </nav>
-
-  //     {transactionHash && <div className={styles.successHash}>Transaction Hash: {transactionHash}</div>}
-
-  //     <div className={styles.mainContent}>
-  //       <div className={styles.card}>
-  //       <button onClick={handleMint} className={styles.mintBtn} disabled={isMinting}>
-  //           {isMinting ? <LoadingIndicator /> : 'Mint'}
-  //         </button>
-  //       </div>
-  //     </div>
-
-  //   </div>
-  // );
 };
 
 export default Home;

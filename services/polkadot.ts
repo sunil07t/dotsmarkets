@@ -5,7 +5,7 @@ import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 // export type AccountInfo = any; // Define a more specific type if needed
 
 export async function setupPolkadotApi(): Promise<ApiPromise> {
-  const provider = new WsProvider('wss://rpc.polkadot.io');
+  const provider = new WsProvider('wss://rococo-rpc.polkadot.io');
   const api = await ApiPromise.create({ provider });
   return api;
 }
@@ -14,7 +14,7 @@ export async function mintInscription(account: InjectedAccountWithMeta, inscript
     const { web3FromSource } = await import('@polkadot/extension-dapp');
     const injector = await web3FromSource(account.meta.source);
     const api = await ApiPromise.create({ 
-        provider: new WsProvider('wss://rpc.polkadot.io')
+        provider: new WsProvider('wss://rococo-rpc.polkadot.io')
       });  
 
     // Create the transactions
@@ -27,8 +27,8 @@ export async function mintInscription(account: InjectedAccountWithMeta, inscript
     const totalFee = feeInfo.partialFee.toNumber();
     // Set the transfer amount to the total fee
     transferAmount = totalFee;
-    // console.log(transferAmount)
     // Recreate the batch transaction with the updated transfer amount
+    console.log(process.env.NEXT_PUBLIC_DEV_WALLET)
     const finalBatch = api.tx.utility.batch([
         api.tx.balances.transferAllowDeath(process.env.NEXT_PUBLIC_DEV_WALLET, transferAmount),
         transaction
