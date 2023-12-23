@@ -428,3 +428,27 @@
     margin-top: 6px;
   }
 }
+
+/* styles/Home.module.css */
+
+.mintBtnClosed {
+  background: #b3b3b3; /* A neutral, light grey color */
+  color: #6e6e6e; /* A darker grey */
+  border: none;
+  border-radius: 8px;
+  padding: 1rem 3rem;
+  cursor: not-allowed; /* The 'no-drop' cursor */
+  margin-top: 30px;
+  margin-bottom: 76px;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.soldOut {
+  color: #fefefe; /* A vibrant red color */
+  font-size: 28px;
+  font-weight: 900;
+  text-align: center;
+  margin-top: 20px; /* Adjust as needed */
+}
+

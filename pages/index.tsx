@@ -16,7 +16,7 @@ const Home: React.FC = () => {
   const [isMinting, setIsMinting] = useState<boolean>(false);
   const [transactionHash, setTransactionHash] = useState<string>('');
   const [mintedCount, setMintedCount] = useState(0);
-  const totalSupply = 420000; // Set your total supply here
+  const totalSupply = 42000000; // Set your total supply here
 
 
   const [isNavCollapsed, setIsNavCollapsed] = useState(true);
@@ -55,8 +55,8 @@ const Home: React.FC = () => {
   }, []); // Empty dependency array means it only runs on mount and unmount
   
   // Calculate progress percentage
-  const progressPercentage = (mintedCount / totalSupply) * 100;
-
+  const progressPercentage = Math.ceil((mintedCount / totalSupply) * 100);
+  const isMintClosed = mintedCount >= totalSupply;
 
   const handleWalletSelect = async (walletName: string) => {
     setIsModalOpen(false);
@@ -80,6 +80,7 @@ const Home: React.FC = () => {
         setIsConnected(true)
       } else {
         console.log(`No accounts found for ${walletName}.`);
+        toast.warn('Wallet not found - try different wallet')
       }
     } catch (error) {
       console.error(`Failed to connect to ${walletName}:`, error);
@@ -126,7 +127,6 @@ const Home: React.FC = () => {
           body: JSON.stringify({ hash: hash.toString(), walletAddress: account.address }),
         });
         const data = await response.json();
-        console.log('Transaction hash:', hash);
       }  catch (error) {
         console.error('Error during stroing mint:', error);
       } 
@@ -223,16 +223,25 @@ const Home: React.FC = () => {
             </div>
             <div className={styles.progressBarInfo}>
               <div className={styles.progressStats}>Minted</div>
-              <div className={styles.progressStats}>Soon</div>
+              <div className={styles.progressStats}>{progressPercentage}%</div>
             </div>
             <div className={styles.progressBar}>
               <div className={styles.progress} style={{ width: `${progressPercentage}%` }}></div>
             </div>
           </div>
           {/* <button className={styles.mintBtn}>Mint Soon</button> */}
-         <button onClick={handleMint} className={styles.mintBtn} disabled={isMinting}>
-           {isMinting ? <LoadingIndicator /> : 'Mint'}
-         </button>
+          {isMintClosed ? (
+            <div>
+              <h2 className={styles.soldOut}>Sold Out</h2>
+              <button className={styles.mintBtnClosed} disabled>
+                Mint
+              </button>
+            </div>
+          ) : (
+            <button onClick={handleMint} className={styles.mintBtn} disabled={isMinting}>
+              {isMinting ? <LoadingIndicator /> : 'Mint'}
+            </button>
+          )}
         </div>
       </main>
 
