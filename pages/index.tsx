@@ -16,7 +16,7 @@ const Home: React.FC = () => {
   const [isMinting, setIsMinting] = useState<boolean>(false);
   const [transactionHash, setTransactionHash] = useState<string>('');
   const [mintedCount, setMintedCount] = useState(0);
-  const totalSupply = 42000000000; // Set your total supply here
+  const totalSupply = 420000; // Set your total supply here
 
 
   const [isNavCollapsed, setIsNavCollapsed] = useState(true);
@@ -26,25 +26,6 @@ const Home: React.FC = () => {
   const handleConnectWallet = () => {
     setIsModalOpen(true);
   };
-
-  // useEffect(() => {
-  //   async function fetchMintedCount() {
-  //     try {
-  //       const response = await fetch('/api/transactions/count');
-  //       const data = await response.json();
-  //       if (response.ok) {
-  //         setMintedCount(data.count);
-  //         console.log(data.count);
-  //       } else {
-  //         console.error('Failed to fetch minted count:', data.message);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching minted count:', error);
-  //     }
-  //   }
-  
-  //   fetchMintedCount();
-  // }, [isMinting]); // Re-fetch whenever a new minting operation occurs
 
 
   useEffect(() => {
@@ -74,7 +55,7 @@ const Home: React.FC = () => {
   }, []); // Empty dependency array means it only runs on mount and unmount
   
   // Calculate progress percentage
-  const progressPercentage = (mintedCount / totalSupply/ 1000) * 100;
+  const progressPercentage = (mintedCount / totalSupply) * 100;
 
 
   const handleWalletSelect = async (walletName: string) => {
