@@ -86,6 +86,10 @@ const Home: React.FC = () => {
     }
   };
 
+  function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   const formatAccountAddress = (address: string): string => {
     if (address.length > 0) {
       return `${address.slice(0, 5)}...${address.slice(-3)}`;
@@ -110,7 +114,9 @@ const Home: React.FC = () => {
       setIsMinting(false);
     } 
     // Send transaction hash and wallet address to backend
+    await sleep(10000);
     if (hash) {
+      setTransactionHash(hash.toString());
       toast.success("Mint Successful: " + hash);
       setIsMinting(false);
       try {
@@ -120,7 +126,6 @@ const Home: React.FC = () => {
           body: JSON.stringify({ hash: hash.toString(), walletAddress: account.address }),
         });
         const data = await response.json();
-        setTransactionHash(hash.toString());
         console.log('Transaction hash:', hash);
       }  catch (error) {
         console.error('Error during stroing mint:', error);
