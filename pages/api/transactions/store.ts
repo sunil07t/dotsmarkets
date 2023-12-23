@@ -41,10 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'POST') {
     await dbConnect();
     const { hash, walletAddress } = req.body;
-    // Call Subscan API to verify the transaction hash
-
-    console.log
-
+    
     await sleep(10000);
 
     const subscanResponse = await fetch('https://rococo.api.subscan.io/api/scan/extrinsic', {
