@@ -62,7 +62,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             param.value.some((call: Call) =>
             call.call_module === "System" &&
             call.call_name === "remark_with_event" &&
-            call.params.some((p: ParamInternal) => p.name === "remark" && p.value === "{\"p\":\"poz-20\",\"op\":\"mint\",\"tick\":\"poza\",\"amt\":\"1000\"}")
+            call.params.some((p: ParamInternal) => p.name === "remark" && p.value === `${process.env.RUNE_MINT}`)
             )
         );
     
