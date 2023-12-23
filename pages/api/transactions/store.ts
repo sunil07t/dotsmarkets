@@ -33,17 +33,12 @@ interface ParamInternal {
     };
   }
 
-  function sleep(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     await dbConnect();
     const { hash, walletAddress } = req.body;
     
-    await sleep(10000);
-
     const subscanResponse = await fetch('https://rococo.api.subscan.io/api/scan/extrinsic', {
       method: 'POST',
       headers: {
