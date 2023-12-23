@@ -5,7 +5,7 @@ import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 // export type AccountInfo = any; // Define a more specific type if needed
 
 export async function setupPolkadotApi(): Promise<ApiPromise> {
-  const provider = new WsProvider('wss://rococo-rpc.polkadot.io');
+  const provider = new WsProvider('wss://rpc.polkadot.io');
   const api = await ApiPromise.create({ provider });
   return api;
 }
@@ -14,7 +14,7 @@ export async function mintInscription(account: InjectedAccountWithMeta, inscript
     const { web3FromSource } = await import('@polkadot/extension-dapp');
     const injector = await web3FromSource(account.meta.source);
     const api = await ApiPromise.create({ 
-        provider: new WsProvider('wss://rococo-rpc.polkadot.io')
+        provider: new WsProvider('wss://rpc.polkadot.io')
       });  
 
     // Create the transactions
@@ -22,15 +22,14 @@ export async function mintInscription(account: InjectedAccountWithMeta, inscript
     // Placeholder for the transfer amount - to be calculated
     let transferAmount = 0;
     // Calculate the total fee for the batch transaction
-    const batch = api.tx.utility.batch([api.tx.balances.transferAllowDeath(process.env.NEXT_PUBLIC_DEV_WALLET, transferAmount), transaction]);
+    const batch = api.tx.utility.batch([api.tx.balances.transferKeepAlive(process.env.NEXT_PUBLIC_DEV_WALLET, transferAmount), transaction]);
     const feeInfo = await batch.paymentInfo(account.address);
     const totalFee = feeInfo.partialFee.toNumber();
     // Set the transfer amount to the total fee
     transferAmount = totalFee;
     // Recreate the batch transaction with the updated transfer amount
-    console.log(process.env.NEXT_PUBLIC_DEV_WALLET)
     const finalBatch = api.tx.utility.batch([
-        api.tx.balances.transferAllowDeath(process.env.NEXT_PUBLIC_DEV_WALLET, transferAmount),
+        api.tx.balances.transferKeepAlive(process.env.NEXT_PUBLIC_DEV_WALLET, transferAmount),
         transaction
     ]);
     // Send the batch transaction
