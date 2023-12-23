@@ -23,7 +23,7 @@ interface ParamInternal {
   interface Event {
     module_id: string;
     event_id: string;
-    params: string[];
+    params: string;
   }
   
   interface SubscanData {
@@ -39,7 +39,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     await dbConnect();
     const { hash, walletAddress } = req.body;
     
-    const subscanResponse = await fetch('https://rococo.api.subscan.io/api/scan/extrinsic', {
+    const subscanResponse = await fetch('https://polkadot.api.subscan.io/api/scan/extrinsic', {
       method: 'POST',
       headers: {
         'x-api-key': `${process.env.SUBSCAN_API_KEY}` 
@@ -52,10 +52,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         const isValidTransaction = (subscanData: SubscanData) =>
         subscanData.data &&
+        subscanData.data.event.some((event: Event) => {
+            if (event.module_id === "balances" && event.event_id === "Transfer") {
+              const params = JSON.parse(event.params);
+              return params.some((param: { type_name: string; value: string; }) =>
+                param.type_name === "Balance" && parseInt(param.value, 10) > 0
+              );
+            }
+            return false;
+        }) &&
         subscanData.data.event.some((event: Event) =>
             event.module_id === "balances" &&
             event.event_id === "Transfer" 
-            && event.params.includes("0xb0ec462fdf84e74f0897b813c61ba48588d55aafcab4f6467ad13648e9ca16d8")
+            && event.params.includes(`${process.env.MULTISIG_ADDRESS}` )
         ) &&
         subscanData.data.params.some((param: Param) =>
             param.name === "calls" &&
