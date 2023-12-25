@@ -9,10 +9,16 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@polkadot-onboard/core": "^1.1.0",
+    "@polkadot-onboard/injected-wallets": "^1.1.0",
+    "@polkadot-onboard/react": "^1.1.0",
+    "@polkadot-onboard/wallet-connect": "^1.1.0",
     "@polkadot/api": "^10.11.1",
     "@polkadot/api-contract": "^10.11.1",
     "@polkadot/extension-dapp": "^0.46.6",
     "@polkadot/extension-inject": "^0.46.6",
+    "@walletconnect/core": "^2.11.0",
+    "@walletconnect/web3wallet": "^1.10.0",
     "classnames": "^2.3.2",
     "mongoose": "^8.0.3",
     "next": "14.0.4",

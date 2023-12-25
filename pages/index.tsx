@@ -1,13 +1,16 @@
 // pages/index.tsx
 import React, { useState, useEffect } from 'react';
 import WalletConnectModal from '../components/WalletConnectModal';
+import MintModal from '../components/MintModal';
 import LoadingIndicator from '../components/LoadingIndicator';
 import { connectWallet, mintInscription } from '../services/polkadot';
 import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
-import styles from '@/styles/Home.module.css'
+import styles from '@/styles/Home.module.css';
 import { toast } from 'react-toastify';
 import Image from 'next/image';
 import classNames from 'classnames';
+import Link from 'next/link'; // Import at the top of your file
+
 
 const Home: React.FC = () => {
   const [account, setAccount] = useState<InjectedAccountWithMeta | null>(null);
@@ -16,6 +19,9 @@ const Home: React.FC = () => {
   const [isMinting, setIsMinting] = useState<boolean>(false);
   const [transactionHash, setTransactionHash] = useState<string>('');
   const [mintedCount, setMintedCount] = useState(0);
+  const [showMintModal, setShowMintModal] = useState(false);
+  const [mintStatus, setMintStatus] = useState('idle'); // 'idle', 'minting', 'completed'
+
   const totalSupply = 42000000; // Set your total supply here
 
 
@@ -23,10 +29,26 @@ const Home: React.FC = () => {
 
   const handleNavCollapse = () => setIsNavCollapsed(!isNavCollapsed);
 
-  const handleConnectWallet = () => {
-    setIsModalOpen(true);
-  };
 
+  useEffect(() => {
+    async function attemptReconnection() {
+      const savedDetails = localStorage.getItem('wallet');
+      if (savedDetails) {
+        const { account: savedAccount, type: savedType } = JSON.parse(savedDetails);
+        const accounts = await connectWallet(savedType);
+        const account = accounts.find(acc => acc.address === savedAccount.address);
+        if (account) {
+          console.log('Reconnected to wallet:', account.meta.name);
+          setAccount(account);
+          setIsConnected(true);
+        } else {
+          console.error('Failed to reconnect to wallet.');
+        }
+      }
+    }
+    attemptReconnection();
+  }, []);
+  
 
   useEffect(() => {
     async function fetchMintedCount() {
@@ -58,34 +80,6 @@ const Home: React.FC = () => {
   const progressPercentage = Math.ceil((mintedCount / totalSupply) * 100);
   const isMintClosed = mintedCount >= totalSupply;
 
-  const handleWalletSelect = async (walletName: string) => {
-    setIsModalOpen(false);
-    // Map the user-friendly wallet name to the known wallet prefix
-    const walletPrefixMap: { [key: string]: string } = {
-      'Talisman': 'talisman',
-      'SubWallet': 'subwallet-js',
-      'Polkadot.js': 'polkadot-js'
-    };
-  
-    const walletPrefix = walletPrefixMap[walletName];
-    if (!walletPrefix) {
-      console.error(`Unknown wallet: ${walletName}`);
-      return;
-    }
-  
-    try {
-      const walletAccounts = await connectWallet(walletPrefix);
-      if (walletAccounts.length > 0) {
-        setAccount(walletAccounts[0]); 
-        setIsConnected(true)
-      } else {
-        console.log(`No accounts found for ${walletName}.`);
-        toast.warn('Wallet not found - try different wallet')
-      }
-    } catch (error) {
-      console.error(`Failed to connect to ${walletName}:`, error);
-    }
-  };
 
   function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -98,27 +92,31 @@ const Home: React.FC = () => {
       return address;
     }
   }
-
   const handleMint = async () => {
     if (!account) {
       handleConnectWallet();
       return;
     }
     setIsMinting(true);
+    setMintStatus('minting'); // Update status to minting
+    setShowMintModal(true);  
     let hash;
     try{
       const inscriptionData = process.env.NEXT_PUBLIC_RUNE_MINT ? process.env.NEXT_PUBLIC_RUNE_MINT : '';
       hash = await mintInscription(account, inscriptionData);
     } catch (error) {
       console.error('Error druing mint:', error);
-      toast.error("Minting failed.");
+      toast.error("Minting failed."+ error);
       setIsMinting(false);
+      setMintStatus('idle'); // Reset the minting status
+      setShowMintModal(true);  
     } 
     // Send transaction hash and wallet address to backend
     await sleep(10000);
     if (hash) {
       setTransactionHash(hash.toString());
       toast.success("Mint Successful: " + hash);
+      // setShowMintModal(true);  
       setIsMinting(false);
       try {
         const response = await fetch('/api/transactions/store', {
@@ -127,8 +125,11 @@ const Home: React.FC = () => {
           body: JSON.stringify({ hash: hash.toString(), walletAddress: account.address }),
         });
         const data = await response.json();
+        setMintStatus('completed'); // Update status to completed
       }  catch (error) {
         console.error('Error during stroing mint:', error);
+        setShowMintModal(false);  
+        setMintStatus('idle'); // Reset the minting status
       } 
       finally {
         setIsMinting(false);
@@ -136,11 +137,48 @@ const Home: React.FC = () => {
     }
   };
   
+  const handleConnectWallet = () => {
+    setIsModalOpen(true);
+  };
 
   const handleDisconnectWallet = () => {
-    setAccount(null);
-    setIsConnected(false)
-  };
+      setAccount(null);
+      setIsConnected(false);
+      localStorage.removeItem('wallet'); // Clear from localStorage
+    };
+
+    const handleWalletSelect = async (walletName: string) => {
+      setIsModalOpen(false);
+      const walletPrefixMap: { [key: string]: string } = {
+        'Talisman': 'talisman',
+        'SubWallet': 'subwallet-js',
+        'Polkadot.js': 'polkadot-js'
+      };
+    
+      const walletPrefix = walletPrefixMap[walletName];
+      if (!walletPrefix) {
+        console.error(`Unknown wallet: ${walletName}`);
+        return;
+      }
+    
+      try {
+        const walletAccounts = await connectWallet(walletPrefix);
+        if (walletAccounts.length > 0) {
+          const selectedAccount = walletAccounts[0];
+          // Save both the account and the wallet type (prefix) to local storage
+          localStorage.setItem('wallet', JSON.stringify({ account: selectedAccount, type: walletPrefix }));
+          setAccount(selectedAccount);
+          setIsConnected(true);
+        } else {
+          console.log(`No accounts found for ${walletName}.`);
+          toast.warn('Wallet not found - try different wallet');
+        }
+      } catch (error) {
+        console.error(`Failed to connect to ${walletName}:`, error);
+      }
+    };
+    
+
 
   return (
     <div className={styles.container}>
@@ -149,6 +187,13 @@ const Home: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         onWalletSelect={handleWalletSelect}
       />
+      <MintModal
+        isOpen={showMintModal}
+        onClose={() => setShowMintModal(false)}
+        transactionHash={transactionHash}
+        mintStatus={mintStatus} // pass the mintStatus as a prop
+      />
+
       <header className={styles.header}>
       <div className={classNames(styles.headerContainer, { [styles.menuOpen]: !isNavCollapsed })}>
         <div className={styles.leftNav}>
@@ -168,15 +213,19 @@ const Home: React.FC = () => {
         </div>
         <nav className={styles.navContent}>
           <nav className={styles.navbar}>
-            <a href="" className={styles.navItem}>HOME</a>
+          <Link href="/">
+            <div className={styles.navItem}>HOME</div>
+          </Link>            
             <a href="https://dots-markets.gitbook.io/dots-markets-litepaper/" target="_" className={styles.navItem}>LITEPAPER</a>
             <div className={styles.navInactive}>MARKETPLACE (COMING)</div>
           </nav>
           <nav className={styles.navbar}>
-            <div className={styles.navInactive}>MY ASSETS (COMING)</div>
-            <a href="#marketplace" className={styles.navItem}>
+          <Link href="/assets">
+            <div className={styles.navItem}>MY ASSETS</div>
+          </Link>  
+          {/* <a href="" className={styles.navItem}>
             <Image src="lang.svg" alt="Language Logo" width={22} height={22} />
-            </a>
+            </a> */}
           {account && (<div className={styles.navItem}>{formatAccountAddress(account.address)}</div>)}
           </nav>
         </nav>
@@ -193,10 +242,14 @@ const Home: React.FC = () => {
       </header>
       <div className={classNames(styles.navOverlay, { [styles.menuOpen]: !isNavCollapsed })}>
         <nav className={styles.navItemsCentered}>
-          <a href="" className={styles.navItem}>HOME</a>
+            <Link href="/">
+            <div className={styles.navItem}>HOME</div>
+            </Link> 
           <a href="https://dots-markets.gitbook.io/dots-markets-litepaper/" target="_" className={styles.navItem}>LITEPAPER</a>
+          <Link href="/assets">
+            <div className={styles.navItem}>MY ASSETS</div>
+          </Link> 
           <div className={styles.navInactive}>MARKETPLACE (COMING)</div>
-          <div className={styles.navInactive}>MY ASSETS (COMING)</div>
         </nav>
       </div>
       <div className={classNames(styles.hLine, { [styles.menuOpen]: !isNavCollapsed })}></div>
@@ -218,7 +271,7 @@ const Home: React.FC = () => {
               </div>
               <div className={styles.mintStats}>
                 <div className={styles.mintStatsTitle}> Mint Time:</div>
-                <div className={styles.mintStatsValue}>TBA DEC. 2023 UTC+0</div>
+                <div className={styles.mintStatsValue}>DEC 25th 2023 15:00PM UTC</div>
               </div>
             </div>
             <div className={styles.progressBarInfo}>

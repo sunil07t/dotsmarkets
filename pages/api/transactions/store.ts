@@ -3,6 +3,11 @@ import dbConnect from '../../../lib/dbConnect';
 import Transaction from '../../../models/Transaction';
 import fetch from 'node-fetch';
 
+// 70929558 > 60000000 ROC & 212383222 > 180000000 DOT 
+const mint_min = process.env.MIN_MINT ? process.env.MIN_MINT : '180000000';
+const MIN_TRANSFER_AMOUNT_PLANCKS = parseInt(mint_min);// 0.018 DOTs in Plancks
+
+
 interface Param {
     name: string;
     value: any[];
@@ -38,8 +43,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'POST') {
     await dbConnect();
     const { hash, walletAddress } = req.body;
+    let url = process.env.SUBSCAN_PAI_URL
+
+    if(!url) {
+      console.log('Please add the Subscan API URL')
+      url = '';
+    }
     
-    const subscanResponse = await fetch('https://polkadot.api.subscan.io/api/scan/extrinsic', {
+    const subscanResponse = await fetch(url, {
       method: 'POST',
       headers: {
         'x-api-key': `${process.env.SUBSCAN_API_KEY}` 
@@ -55,12 +66,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         subscanData.data.event.some((event: Event) => {
             if (event.module_id === "balances" && event.event_id === "Transfer") {
               const params = JSON.parse(event.params);
-              return params.some((param: { type_name: string; value: string; }) =>
-                param.type_name === "Balance" && parseInt(param.value, 10) > 0
+              const amountParam = params.find((param: { type_name: string; value: string; }) =>
+                param.type_name === "Balance"
               );
+              if (amountParam) {
+                const amount = parseFloat(amountParam.value);
+                console.log(amount)
+                console.log(MIN_TRANSFER_AMOUNT_PLANCKS)
+                return amount >= MIN_TRANSFER_AMOUNT_PLANCKS;
+              }
             }
             return false;
-        }) &&
+          }) &&
         subscanData.data.event.some((event: Event) =>
             event.module_id === "balances" &&
             event.event_id === "Transfer" 

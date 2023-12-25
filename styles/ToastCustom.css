@@ -1,0 +1,33 @@
+/* styles/ToastCustom.css */
+
+.Toastify__toast {
+    background: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(10px) !important;
+    border-radius: 20px !important;
+    color: #fefefe !important;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .Toastify__close-button {
+    color: #fefefe !important;
+  }
+  
+  .Toastify__close-button:hover {
+    color: rgba(255, 255, 255, 0.6) !important;
+  }
+  
+  .Toastify__toast--default {
+    background: #F5F5F5 !important;
+    color: #010D17 !important;
+  }
+  
+  .Toastify__toast-body {
+    font-size: 1rem !important;
+  }
+  
+  /* Custom link style inside toast messages */
+  .toast-link {
+    color: #9693f5;
+    text-decoration: none;
+  }
+  
