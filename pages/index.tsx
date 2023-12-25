@@ -282,8 +282,8 @@ const Home: React.FC = () => {
               <div className={styles.progress} style={{ width: `${progressPercentage}%` }}></div>
             </div>
           </div>
-          {/* <button className={styles.mintBtn}>Mint Soon</button> */}
-          {isMintClosed ? (
+          <button className={styles.mintBtn}>Mint Soon</button> 
+{/*           {isMintClosed ? (
             <div>
               <h2 className={styles.soldOut}>Sold Out</h2>
               <button className={styles.mintBtnClosed} disabled>
@@ -294,7 +294,7 @@ const Home: React.FC = () => {
             <button onClick={handleMint} className={styles.mintBtn} disabled={isMinting}>
               {isMinting ? <LoadingIndicator /> : 'Mint'}
             </button>
-          )}
+          )} */}
         </div>
       </main>
 
